@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sliding Window Visualizer</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #arrayContainer { display: flex; gap: 5px; margin: 20px 0; }
+    .element {
+      width: 50px; height: 50px;
+      border: 2px solid black;
+      display: flex; align-items: center; justify-content: center;
+      background: lightgray; font-weight: bold; font-size: 20px;
+    }
+    .window { border-color: red; background: pink; }
+    button, input { padding: 8px 12px; margin-right: 8px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h2>Sliding Window Visualizer (k = 3)</h2>
+  
+  <div>
+    <input type="text" id="arrayInput" value="1,12,-5,-6,50,3" size="30">
+    <button id="startBtn">Reset</button>
+    <button id="stepBtn">Step Forward</button>
+  </div>
+
+  <div id="arrayContainer"></div>
+
+  <p>Current Window Sum: <span id="sumDisplay">0</span></p>
+  <p>Max Sum Seen: <span id="maxDisplay">0</span></p>
+
+  <script>
+    let nums = [1, 12, -5, -6, 50, 3];
+    let k = 3;
+    let currentIndex = 0;
+    let currentSum = 0;
+    let maxSum = 0;
+
+    function initWindow() {
+      currentSum = 0;
+      for (let i = 0; i < k; i++) {
+        currentSum = currentSum + nums[i];
+      }
+      maxSum = currentSum;
+      currentIndex = 0;
+      renderArray();
+      updateDisplay();
+    }
+
+    function renderArray() {
+      const container = document.getElementById('arrayContainer');
+      container.innerHTML = '';
+      
+      for (let i = 0; i < nums.length; i++) {
+        const box = document.createElement('div');
+        box.className = 'element';
+        
+        if (i >= currentIndex && i < currentIndex + k) {
+          box.classList.add('window');
+        }
+        
+        box.textContent = nums[i];
+        container.appendChild(box);
+      }
+    }
+
+    function updateDisplay() {
+      document.getElementById('sumDisplay').textContent = currentSum;
+      document.getElementById('maxDisplay').textContent = maxSum;
+    }
+
+    function stepForward() {
+      if (currentIndex + k >= nums.length) {
+        alert('No more steps!');
+        return;
+      }
+      
+      currentSum = currentSum - nums[currentIndex] + nums[currentIndex + k];
+      
+      if (currentSum > maxSum) {
+        maxSum = currentSum;
+      }
+      
+      currentIndex = currentIndex + 1;
+      
+      renderArray();
+      updateDisplay();
+    }
+
+    document.getElementById('startBtn').addEventListener('click', function() {
+      const input = document.getElementById('arrayInput').value;
+      nums = input.split(',').map(function(x) { return Number(x.trim()); });
+      initWindow();
+    });
+
+    document.getElementById('stepBtn').addEventListener('click', stepForward);
+
+    initWindow();
+  </script>
+</body>
+</html>
